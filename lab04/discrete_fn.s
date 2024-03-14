@@ -77,6 +77,12 @@ main:
 # Think: why might having a1 be useful?
 f:
     # YOUR CODE GOES HERE!
+    addi t0, x0, 4      # Array Traversal Constant
+    addi a0, a0, 3      # Index/stack position indicator
+    mul a0, t0, a0      # Index calculation
+    add t1, a1, a0      # Creating base pointer by calculating exact address position
+    
+    lw a0, 0(t1)        # loading address into a0 (argument register)
 
     jr ra               # Always remember to jr ra after your function!
 

@@ -55,9 +55,12 @@ main:
 # FIXME Fix the reported error in this function (you can delete lines
 # if necessary, as long as the function still returns 1 in a0).
 simple_fn:
-    mv a0, t0
-    li a0, 1
-    ret
+   #removing command  mv a0, t0
+   #It seems t0 is being used without being set first. 
+   #You need to assign a value to t0 before using it.
+    
+   li a0, 1
+   ret
 
 # Computes a0 to the power of a1.
 # This is analogous to the following C pseudocode:
@@ -76,7 +79,16 @@ simple_fn:
 # missing. Another hint: what does the "s" in "s0" stand for?
 naive_pow:
     # BEGIN PROLOGUE
+    
+    #This violation happens multiple times, 
+    #indicating that s0 is being modified without saving its 
+    #original value in the function prologue. 
+    
+    addi sp, sp, -4
+    sw s0, 0(sp)
+    
     # END PROLOGUE
+    
     li s0, 1
 naive_pow_loop:
     beq a1, zero, naive_pow_end
@@ -86,6 +98,8 @@ naive_pow_loop:
 naive_pow_end:
     mv a0, s0
     # BEGIN EPILOGUE
+    lw s0, 0(sp)
+    addi sp, sp, 4
     # END EPILOGUE
     ret
 
@@ -97,11 +111,16 @@ naive_pow_end:
 # address as argument and increments the 32-bit value stored there.
 inc_arr:
     # BEGIN PROLOGUE
-    #
     # FIXME What other registers need to be saved?
-    #
-    addi sp, sp, -4
+    # Similar to the previous violation,
+    # this indicates that s1 is being modified
+    # without saving its original value. 
+    
+    addi sp, sp, -12
     sw ra, 0(sp)
+    sw s0, 4(sp)
+    sw s1, 8(sp)
+    
     # END PROLOGUE
     mv s0, a0 # Copy start of array to saved register
     mv s1, a1 # Copy length of array to saved register
@@ -123,10 +142,11 @@ inc_arr_loop:
 inc_arr_end:
     # BEGIN EPILOGUE
     lw ra, 0(sp)
-    addi sp, sp, 4
+    lw s0, 4(sp)
+    lw s1, 8(sp)
+    addi sp, sp, 12
     # END EPILOGUE
     ret
-
 # This helper function adds 1 to the value at the memory address in a0.
 # It doesn't return anything.
 # C pseudocode for what it does: "*a0 = *a0 + 1"
@@ -137,11 +157,16 @@ inc_arr_end:
 # as appropriate.
 helper_fn:
     # BEGIN PROLOGUE
+    addi sp,sp,-4
+    sw s0,0(sp)
     # END PROLOGUE
     lw t1, 0(a0)
     addi s0, t1, 1
     sw s0, 0(a0)
     # BEGIN EPILOGUE
+    lw s0,0(sp)
+    addi sp,sp,4
+    
     # END EPILOGUE
     ret
 
