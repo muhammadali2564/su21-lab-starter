@@ -1,23 +1,34 @@
+.globl factorial
+
 .data
-.word 2, 4, 6, 8
-n: .word 9
+n: .word 8
 
 .text
 main:
-    add t0, x0, x0
-    addi t1, x0, 1
-    la t3, n
-    lw t3, 0(t3)
-fib:
-    beq t3, x0, finish
-    add t2, t1, t0
-    mv t0, t1
-    mv t1, t2
-    addi t3, t3, -1
-    j fib
-finish:
+    la t0, n
+    lw a0, 0(t0)
+    jal ra, factorial
+
+    addi a1, a0, 0
     addi a0, x0, 1
-    addi a1, t0, 0
-    ecall # print integer ecall
+    ecall # Print Result
+
+    addi a1, x0, '\n'
+    addi a0, x0, 11
+    ecall # Print newline
+
     addi a0, x0, 10
-    ecall # terminate ecall
+    ecall # Exit
+
+factorial:
+	addi t1, x0, 1  # Initializing Count
+	addi t2, x0, 1  # Initializing loop increment variable
+loop:
+	mul t2, t2, t1  # Factorial Logic
+    beq t1, a0, finish # Condition to compare count and n variable
+    addi t1, t1, 1 # Increment in count
+	j loop  # jump to loop lable
+finish:
+    add a0, x0, t2 # Will save t2 value in a0 argument register
+	jr ra          # jump to return address
+    
